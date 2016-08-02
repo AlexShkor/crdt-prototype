@@ -1,5 +1,0 @@
-C:\git\crdt-prototype\Crdt.Core\bin\Debug\Crdt.Core.dll
-C:\git\crdt-prototype\Crdt.Core\bin\Debug\Crdt.Core.pdb
-C:\git\crdt-prototype\Crdt.Core\obj\Debug\Crdt.Core.csprojResolveAssemblyReference.cache
-C:\git\crdt-prototype\Crdt.Core\obj\Debug\Crdt.Core.dll
-C:\git\crdt-prototype\Crdt.Core\obj\Debug\Crdt.Core.pdb
