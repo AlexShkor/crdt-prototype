@@ -41,14 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuaration.cs" />
-    <Compile Include="DataEntry.cs" />
-    <Compile Include="DocumentData.cs" />
+    <Compile Include="Data\DataEntry.cs" />
+    <Compile Include="Data\DocumentData.cs" />
+    <Compile Include="Data\IStorage.cs" />
+    <Compile Include="Data\StringDataEntry.cs" />
     <Compile Include="IDatabaseService.cs" />
     <Compile Include="CreateDocumentRequest.cs" />
-    <Compile Include="IStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplicasUpdater.cs" />
-    <Compile Include="StringDataEntry.cs" />
     <Compile Include="UpdateDocumentCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
