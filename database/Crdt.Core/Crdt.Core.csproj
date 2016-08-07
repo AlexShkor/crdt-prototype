@@ -49,6 +49,10 @@
     <Compile Include="CreateDocumentRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplicasUpdater.cs" />
+    <Compile Include="Storage\DocumentStorageData.cs" />
+    <Compile Include="Storage\IDataEntryProcessor.cs" />
+    <Compile Include="Storage\MemoryStorage.cs" />
+    <Compile Include="Storage\StringDataEntryProcessor.cs" />
     <Compile Include="UpdateDocumentCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
