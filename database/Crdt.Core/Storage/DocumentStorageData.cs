@@ -9,16 +9,35 @@ namespace Crdt.Core.Storage
 {
     internal class DocumentStorageData
     {
-        public DocumentData Document { get; set; }
+        public DocumentStorageData(IReadOnlyDictionary<string, IDataEntryProcessor> columnModel)
+        {
+            if (columnModel == null)
+            {
+                throw new ArgumentNullException(nameof(columnModel));
+            }
 
-        private ConcurrentDictionary<string, UpdateDocumentCommand> _updates  = 
+            _columnModel = columnModel;
+        }
+
+        public DocumentData Document
+        {
+            get
+            {
+                return _document;
+            }
+            set
+            {
+                CheckColumnModel(value);
+                _document = value;
+            }
+        }
+
+        private readonly ConcurrentDictionary<string, UpdateDocumentCommand> _updates  = 
             new ConcurrentDictionary<string, UpdateDocumentCommand>();
 
-        private static Dictionary<string, IDataEntryProcessor> _dataEntryProcessors =
-             new Dictionary<string, IDataEntryProcessor>
-             {
-                { "string", new StringDataEntryProcessor() }
-             };
+        private readonly IReadOnlyDictionary<string, IDataEntryProcessor> _columnModel;
+
+        private DocumentData _document;
 
         public void Update(UpdateDocumentCommand update)
         {
@@ -32,9 +51,9 @@ namespace Crdt.Core.Storage
                 return null;
             }
 
-            var entries = Document.Entries.ToDictionary(p => p.Key, p => _dataEntryProcessors[p.Value.Type].Copy(p.Value));
-
-            foreach(var update in _updates.Select(u => u.Value).OrderBy(u => u.DateTime).ToList())
+            var entries = CopyDocumentEntries();
+            var orderedUpdates = _updates.Select(u => u.Value).OrderBy(u => u.DateTime).ToList();
+            foreach (var update in orderedUpdates)
             {
                 if (!entries.ContainsKey(update.FieldName))
                 {
@@ -42,7 +61,7 @@ namespace Crdt.Core.Storage
                 }
 
                 var entry = entries[update.FieldName];
-                _dataEntryProcessors[entry.Type].Update(entry, update);
+                _columnModel[update.FieldName].Update(entry, update);
             }
 
             return new DocumentData()
@@ -50,6 +69,20 @@ namespace Crdt.Core.Storage
                 Id = Document.Id,
                 Entries = entries
             };
+        }
+
+        private void CheckColumnModel(DocumentData document)
+        {
+            var missedColumns = _columnModel.Where(c => !document.Entries.ContainsKey(c.Key));
+            if (missedColumns.Any())
+            {
+                throw new FormatException();
+            }
+        }
+
+        private Dictionary<string, DataEntry> CopyDocumentEntries()
+        {
+            return Document.Entries.ToDictionary(p => p.Key, p => _columnModel[p.Key].Copy(p.Value));
         }
     }
 }
