@@ -8,8 +8,8 @@ namespace Crdt.Core
 {
     public interface IDatabaseService
     {
-        void CreateDocument(CreateDocumentRequest request);
-        string GetDocument();
-        void AddToEmbededCollection();
+        string CreateDocument(string json);
+        string GetDocument(string id);
+        void AddToEmbededCollection(string id, string field, string itemJson);
     }
 }
