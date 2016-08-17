@@ -1,7 +1,7 @@
 using Crdt.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Crdt.Server
+namespace Crdt.Core.API
 {
     public static class ConfigurationService
     {
