@@ -2,7 +2,7 @@ using Crdt.Core;
 using Crdt.Core.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Crdt.Server
+namespace Crdt.Core.API
 {
     public static class AddDependencyService
     {
