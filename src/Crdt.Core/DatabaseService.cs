@@ -26,7 +26,7 @@ namespace Crdt.Core
         public string CreateDocument(string json)
         {
             var jo = JObject.Parse(json);
-            _storage.SaveDocument(new DocumentData());
+            _storage.SaveDocument(jo);
             return jo.ToString();      
         }
 
