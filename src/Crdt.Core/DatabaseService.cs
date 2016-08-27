@@ -18,7 +18,7 @@ namespace Crdt.Core
                  DocumentId = id,
                  FieldName = prop,
                  //TODO need attention
-                 Entry = new DocumentData()
+                 //Entry = new DocumentData()
             });
         }
 
