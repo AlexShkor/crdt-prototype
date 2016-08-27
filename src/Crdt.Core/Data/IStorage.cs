@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,8 @@ namespace Crdt.Core
 {
     public interface IStorage
     {
-        void SaveDocument(DocumentData data);
+        JObject SaveDocument(JObject data);
         void UpdateDocument(UpdateDocumentCommand cmd);
-        DocumentData GetDocument(string id);
+        JObject GetDocument(string id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +25,22 @@ namespace Crdt.Core.Storage
             _columnModel = columnModel;
         }
 
-        public DocumentData GetDocument(string id)
+        public JObject GetDocument(string id)
         {
             DocumentStorageData documentStorage;
-            return _storage.TryGetValue(id, out documentStorage) ? documentStorage.CalculateDocument() : null;
+            var doc = _storage.TryGetValue(id, out documentStorage) ? documentStorage.CalculateDocument() : null;
+            var jo = new JObject();
+            if (doc != null)
+            {
+                foreach (var entry in doc.Entries)
+                {
+
+                }
+            }
+            return jo;
         }
 
-        public void SaveDocument(DocumentData data)
+        public JObject SaveDocument(JObject data)
         {
             _storage.AddOrUpdate(data.Id, 
                 new DocumentStorageData(_columnModel) { Document = data }, 

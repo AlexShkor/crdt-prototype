@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Crdt.Core
 {
@@ -15,7 +16,7 @@ namespace Crdt.Core
 
     public class AddToSetCommand : UpdateDocumentCommand
     {
-        public DocumentData Entry { get; set; }
+        public JObject Entry { get; set; }
     }
 
     public interface ICommandProcessor<T> where T : UpdateDocumentCommand
