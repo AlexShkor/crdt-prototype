@@ -42,13 +42,14 @@ namespace Crdt.Core.Storage
 
         public JObject SaveDocument(JObject data)
         {
-            _storage.AddOrUpdate(data.Id, 
-                new DocumentStorageData(_columnModel) { Document = data }, 
-                (key, storData) =>
-                {
-                    storData.Document = data;
-                    return storData;
-                });
+            //_storage.AddOrUpdate(data.Id, 
+            //    new DocumentStorageData(_columnModel) { Document = data }, 
+            //    (key, storData) =>
+            //    {
+            //        storData.Document = data;
+            //        return storData;
+            //    });
+            return new JObject();
         }
 
         public void UpdateDocument(UpdateDocumentCommand cmd)
