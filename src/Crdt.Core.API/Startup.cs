@@ -1,3 +1,4 @@
+using Crdt.Core.API.Models;
 using Crdt.Core.Messaging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +17,6 @@ namespace Crdt.Core.API
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var test = new RabbitMqMessageClient();
             loggerFactory.AddConsole();
 
             if(env.IsDevelopment()){
