@@ -4,17 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Crdt.Core.Messaging;
 
 namespace Crdt.Core.Storage
 {
     internal class DocumentStorageData
     {
+        private readonly IReadOnlyDictionary<string, IDataEntryProcessor> _columnModel;
+        private DocumentData _document;
+
+        private readonly ConcurrentDictionary<string, UpdateDocumentCommand> _updates = 
+            new ConcurrentDictionary<string, UpdateDocumentCommand>();
+
+
         public DocumentStorageData(IReadOnlyDictionary<string, IDataEntryProcessor> columnModel)
         {
-            if (columnModel == null)
-            {
-                throw new ArgumentNullException(nameof(columnModel));
-            }
+            if (columnModel == null) throw new ArgumentNullException(nameof(columnModel));
 
             _columnModel = columnModel;
         }
@@ -32,13 +37,6 @@ namespace Crdt.Core.Storage
             }
         }
 
-        private readonly ConcurrentDictionary<string, UpdateDocumentCommand> _updates  = 
-            new ConcurrentDictionary<string, UpdateDocumentCommand>();
-
-        private readonly IReadOnlyDictionary<string, IDataEntryProcessor> _columnModel;
-
-        private DocumentData _document;
-
         public void Update(UpdateDocumentCommand update)
         {
             _updates.TryAdd(update.CommandId, update);
@@ -46,7 +44,7 @@ namespace Crdt.Core.Storage
 
         public DocumentData CalculateDocument()
         {
-            if(Document == null)
+            if (Document == null)
             {
                 return null;
             }
