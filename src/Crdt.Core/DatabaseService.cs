@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 
 namespace Crdt.Core
 {
@@ -17,8 +18,8 @@ namespace Crdt.Core
             {
                  DocumentId = id,
                  FieldName = prop,
-                 //TODO need attention
-                 //Entry = new DocumentData()
+                 Entry = JObject.Parse(item),
+                 CommandId = Guid.NewGuid().ToString()
             });
         }
 

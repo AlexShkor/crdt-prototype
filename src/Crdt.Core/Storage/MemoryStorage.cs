@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Crdt.Core.Data;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,84 +12,52 @@ namespace Crdt.Core.Storage
 {
     public class MemoryStorage : IStorage
     {
-        private readonly ConcurrentDictionary<string, DocumentStorageData> _storage =
-            new ConcurrentDictionary<string, DocumentStorageData>();
-
-        private readonly IReadOnlyDictionary<string, IDataEntryProcessor> _columnModel;
+        private readonly ConcurrentDictionary<string, DocumentData> _storage =
+            new ConcurrentDictionary<string, DocumentData>();
+        
         private readonly IReplicasUpdater _updater;
 
-        public MemoryStorage(IReadOnlyDictionary<string, IDataEntryProcessor> columnModel, IReplicasUpdater updater)
+        public MemoryStorage(IReplicasUpdater updater)
         {
-            // TODO: Fill columnModel model
-            if (columnModel == null) throw new ArgumentNullException(nameof(columnModel));
-
-            _columnModel = columnModel;
             _updater = updater;
-            _updater.ListenForUpdate(this.Update);
+            _updater.ListenForUpdate(this.UpdateDocument);
         }
 
         public JObject GetDocument(string id)
         {
-            DocumentStorageData documentStorage;
-            var documentData = _storage.TryGetValue(id, out documentStorage) ? documentStorage.CalculateDocument() : null;
-            return ConvertDocumentDataToJson(documentData);
+            var doc = GetFromStorage(id);
+            return doc.ToJson();
         }
 
         public JObject SaveDocument(JObject data)
         {
-            var id = Guid.NewGuid().ToString();
-
+            var id = data["id"].ToString() ?? Guid.NewGuid().ToString();
             var documentData = new DocumentData() { Id = id, Entries = new Dictionary<string, DataEntry>()};
-            foreach (var field in data)
-            {
-                documentData.Entries.Add(field.Key, new StringDataEntry() { Name = field.Key, Value = field.Value.ToString() });
-            }
-
-            _storage.AddOrUpdate(id,
-               new DocumentStorageData(_columnModel) { Document = documentData },
-               (key, storedData) => storedData);
-
-            return ConvertDocumentDataToJson(documentData);
+            documentData.ParseEntries(data);
+            _storage.TryAdd(id, documentData);
+            return documentData.ToJson();
         }
 
-        public void UpdateDocument(UpdateDocumentCommand cmd)
+        public void UpdateDocument(AddToSetCommand cmd)
         {
-            Update(cmd);
-            Send(cmd);
+            var doc = GetFromStorage(cmd.DocumentId);
+            var entry = doc.Entries[cmd.FieldName];
+            var array = entry as ArrayDataEntry;
+            var entryDoc = new DocumentData();
+            entryDoc.ParseEntries(cmd.Entry);
+            array.AddItem(entryDoc);
         }
 
-        private void Update(UpdateDocumentCommand cmd)
+        private DocumentData GetFromStorage(string id)
         {
-            _storage.AddOrUpdate(cmd.DocumentId,
-                new DocumentStorageData(_columnModel),
-                (key, storedData) =>
-                {
-                    storedData.Update(cmd);
-                    return storedData;
-                });
+            DocumentData doc = null;
+            _storage.TryGetValue(id, out doc);
+            return doc;
         }
 
         private void Send(UpdateDocumentCommand cmd)
         {
             _updater.SendUpdate(cmd);
-        }
-
-
-        private JObject ConvertDocumentDataToJson(DocumentData data)
-        {
-            var jo = new JObject();
-            if (data != null)
-            {
-                jo["id"] = data.Id;
-                foreach (var entry in data.Entries)
-                {
-                    var stringDataEntry = entry.Value as StringDataEntry;
-
-                    if (stringDataEntry != null)
-                        jo[entry.Value.Name] = stringDataEntry.Value;
-                }
-            }
-            return jo;
         }
     }
 }

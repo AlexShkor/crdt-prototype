@@ -18,7 +18,7 @@ namespace Crdt.Core
             _sender = sender;
         }
 
-        public void ListenForUpdate(Action<UpdateDocumentCommand> callback)
+        public void ListenForUpdate(Action<AddToSetCommand> callback)
         {
             _consumer.ListenToSibilings(callback);
         }

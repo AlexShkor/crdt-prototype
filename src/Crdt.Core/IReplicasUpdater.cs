@@ -7,7 +7,7 @@ namespace Crdt.Core
 {
     public interface IReplicasUpdater
     {
-        void ListenForUpdate(Action<UpdateDocumentCommand> callback);
+        void ListenForUpdate(Action<AddToSetCommand> callback);
         void SendUpdate(UpdateDocumentCommand update);
     }
 }

@@ -35,7 +35,7 @@ namespace Crdt.Core.Messaging
         }
 
 
-        public void ListenToSibilings(Action<UpdateDocumentCommand> update)
+        public void ListenToSibilings(Action<AddToSetCommand> update)
         {
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (ch, ea) =>
@@ -45,8 +45,8 @@ namespace Crdt.Core.Messaging
                 var operation = Serializer.DeserializeFromString(bodyString);
 
                 // process operation 
-                if (operation is UpdateDocumentCommand)
-                    update(operation as UpdateDocumentCommand);
+                if (operation is AddToSetCommand)
+                    update(operation as AddToSetCommand);
 
                 _channel.BasicAck(ea.DeliveryTag, false);
             };

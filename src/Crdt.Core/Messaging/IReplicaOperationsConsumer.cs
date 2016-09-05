@@ -7,6 +7,6 @@ namespace Crdt.Core.Messaging
 {
     public interface IReplicaOperationsConsumer
     {
-        void ListenToSibilings(Action<UpdateDocumentCommand> callback);
+        void ListenToSibilings(Action<AddToSetCommand> callback);
     }
 }

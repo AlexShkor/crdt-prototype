@@ -18,17 +18,4 @@ namespace Crdt.Core
     {
         public JObject Entry { get; set; }
     }
-
-    public interface ICommandProcessor<T> where T : UpdateDocumentCommand
-    {
-        void Process(T cmd, DocumentData target);
-    }
-
-    public class AddToSetCommandProcessor : ICommandProcessor<AddToSetCommand>
-    {
-        public void Process(AddToSetCommand cmd, DocumentData target)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

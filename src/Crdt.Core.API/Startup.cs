@@ -22,10 +22,7 @@ namespace Crdt.Core.API
 
             services.AddTransient<IDatabaseService, DatabaseService>();
             services.AddSingleton<IStorage, MemoryStorage>();
-
-            // TODO: Fill Dictionary with DataEntryProcessor types
-            services.AddSingleton(typeof (IReadOnlyDictionary<string, IDataEntryProcessor>),
-                serviceProvider => new ReadOnlyDictionary<string, IDataEntryProcessor>(new Dictionary<string, IDataEntryProcessor>()));
+            
             services.AddSingleton<IReplicasUpdater, ReplicasUpdater>();
 
             services.AddSingleton<IReplicaOperationsConsumer, RabbitMqConsumer>();
