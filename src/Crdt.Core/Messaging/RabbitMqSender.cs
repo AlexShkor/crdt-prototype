@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Crdt.Core.Messaging.Utils;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 
 namespace Crdt.Core.Messaging
 {
     public class RabbitMqSender : IReplicaOperationsSender
     {
-        private Dictionary<string, IModel> _siblings = new Dictionary<string, IModel>();
+        private readonly Dictionary<string, IModel> _siblings = new Dictionary<string, IModel>();
+        private const string SendingQueuesEnvVarName = "SIBILINGS_QUEUES";
 
         public RabbitMqSender()
         {
@@ -20,7 +20,7 @@ namespace Crdt.Core.Messaging
             factory.Uri = "amqp://guest:guest@127.0.0.1:5672/";
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
-            var sibilings = Environment.GetEnvironmentVariable("SIBILINGS_QUEUES");
+            var sibilings = Environment.GetEnvironmentVariable(SendingQueuesEnvVarName);
 
             if (sibilings == null) throw new Exception("Sibiling replicated dbs are undefined");
             

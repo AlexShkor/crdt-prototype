@@ -10,8 +10,9 @@ namespace Crdt.Core.Messaging
 {
     public class RabbitMqConsumer : IReplicaOperationsConsumer
     {
-        private IModel _channel;
+        private readonly IModel _channel;
         private string _consumerTag;
+        private const string ConsumingQueueEnvVarName = "MY_QUEUE";
 
         public RabbitMqConsumer()
         {
@@ -19,7 +20,7 @@ namespace Crdt.Core.Messaging
             factory.Uri = "amqp://guest:guest@127.0.0.1:5672/";
             var connection = factory.CreateConnection();
 
-            var myQueue = Environment.GetEnvironmentVariable("MY_QUEUE");
+            var myQueue = Environment.GetEnvironmentVariable(ConsumingQueueEnvVarName);
             if (myQueue == null) throw new Exception("Consuming queue is undefined for current replica");
 
             var channel = connection.CreateModel();
@@ -50,7 +51,7 @@ namespace Crdt.Core.Messaging
                 _channel.BasicAck(ea.DeliveryTag, false);
             };
 
-            var myQueue = Environment.GetEnvironmentVariable("MY_QUEUE");
+            var myQueue = Environment.GetEnvironmentVariable(ConsumingQueueEnvVarName);
             if (myQueue == null) throw new Exception("Consuming queue is undefined for current replica");
 
             _consumerTag = _channel.BasicConsume(myQueue, false, consumer);

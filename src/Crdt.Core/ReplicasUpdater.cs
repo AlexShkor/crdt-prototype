@@ -12,10 +12,10 @@ namespace Crdt.Core
         private readonly IReplicaOperationsConsumer _consumer;
         private readonly IReplicaOperationsSender _sender;
 
-        public ReplicasUpdater()
+        public ReplicasUpdater(IReplicaOperationsConsumer consumer, IReplicaOperationsSender sender)
         {
-            _sender = new RabbitMqSender();
-            _consumer = new RabbitMqConsumer();
+            _consumer = consumer;
+            _sender = sender;
         }
 
         public void ListenForUpdate(Action<UpdateDocumentCommand> callback)

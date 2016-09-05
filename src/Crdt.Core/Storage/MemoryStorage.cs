@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Crdt.Core.Storage
 
         public MemoryStorage(IReadOnlyDictionary<string, IDataEntryProcessor> columnModel, IReplicasUpdater updater)
         {
+            // TODO: Fill columnModel model
             if (columnModel == null) throw new ArgumentNullException(nameof(columnModel));
 
             _columnModel = columnModel;
@@ -34,15 +36,15 @@ namespace Crdt.Core.Storage
 
         public JObject SaveDocument(JObject data)
         {
-            var _id = Guid.NewGuid().ToString();
+            var id = Guid.NewGuid().ToString();
 
-            var documentData = new DocumentData() { Id = _id };
+            var documentData = new DocumentData() { Id = id, Entries = new Dictionary<string, DataEntry>()};
             foreach (var field in data)
             {
                 documentData.Entries.Add(field.Key, new StringDataEntry() { Name = field.Key, Value = field.Value.ToString() });
             }
 
-            _storage.AddOrUpdate(_id,
+            _storage.AddOrUpdate(id,
                new DocumentStorageData(_columnModel) { Document = documentData },
                (key, storedData) => storedData);
 
@@ -77,6 +79,7 @@ namespace Crdt.Core.Storage
             var jo = new JObject();
             if (data != null)
             {
+                jo["id"] = data.Id;
                 foreach (var entry in data.Entries)
                 {
                     var stringDataEntry = entry.Value as StringDataEntry;
