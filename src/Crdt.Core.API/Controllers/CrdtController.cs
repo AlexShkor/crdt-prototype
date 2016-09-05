@@ -2,6 +2,7 @@ using Crdt.Core;
 using Crdt.Core.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Crdt.Core.API.Controllers
 {
@@ -13,7 +14,6 @@ namespace Crdt.Core.API.Controllers
 
         public DocumentsController(IDatabaseService databaseService, ILoggerFactory loggerFactory)
         {
-            // TODO: Fix DI for IDatabaseService databaseService
             _databaseService = databaseService;
             _logger = loggerFactory.CreateLogger<DocumentsController>();
         }
@@ -22,8 +22,7 @@ namespace Crdt.Core.API.Controllers
         public IActionResult CreateDocument([FromBody] Crdt.Core.API.Models.CreateDocumentRequest request)
         {
             _logger.LogInformation("JsonDocument is " + request.JsonDocument);
-            _databaseService.CreateDocument(request.JsonDocument);
-            return Ok(/* return created document id here */);
+            return Ok(_databaseService.CreateDocument(request.JsonDocument));
         }
 
         [HttpPost("get")]

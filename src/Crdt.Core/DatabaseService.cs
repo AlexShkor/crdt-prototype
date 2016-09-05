@@ -22,12 +22,11 @@ namespace Crdt.Core
             });
         }
 
-        //TODO Need attention
         public string CreateDocument(string json)
         {
             var jo = JObject.Parse(json);
-            _storage.SaveDocument(jo);
-            return jo.ToString();      
+            var doc = _storage.SaveDocument(jo);
+            return doc.ToString();      
         }
 
         public string GetDocument(string id)
