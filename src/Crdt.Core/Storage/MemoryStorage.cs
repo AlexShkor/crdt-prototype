@@ -31,7 +31,7 @@ namespace Crdt.Core.Storage
 
         public JObject SaveDocument(JObject data)
         {
-            var id = data["id"].ToString() ?? Guid.NewGuid().ToString();
+            var id = (data["id"] ?? Guid.NewGuid()).ToString();
             var documentData = new DocumentData() { Id = id, Entries = new Dictionary<string, DataEntry>()};
             documentData.ParseEntries(data);
             _storage.TryAdd(id, documentData);

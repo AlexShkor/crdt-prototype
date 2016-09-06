@@ -35,7 +35,6 @@ namespace Crdt.Core.Data
             foreach (var item in Items)
             {
                 var jObject = item.ToJson();
-                jObject.Remove("id");
                 jArray.Add(jObject);
             }
             return jArray;
