@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
+using Crdt.Core.Configuration;
 using Crdt.Core.Messaging.Utils;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 
 namespace Crdt.Core.Messaging
@@ -12,19 +11,17 @@ namespace Crdt.Core.Messaging
     public class RabbitMqSender : IReplicaOperationsSender
     {
         private readonly Dictionary<string, IModel> _siblings = new Dictionary<string, IModel>();
-        private const string SendingQueuesEnvVarName = "SIBILINGS_QUEUES";
 
-        public RabbitMqSender()
+        public RabbitMqSender(QueueConfiguration configuration)
         {
             var factory = new ConnectionFactory();
             factory.Uri = "amqp://guest:guest@127.0.0.1:5672/";
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
-            var sibilings = Environment.GetEnvironmentVariable(SendingQueuesEnvVarName);
 
-            if (sibilings == null) throw new Exception("Sibiling replicated dbs are undefined");
+            if (configuration.SendingQueues == null || !configuration.SendingQueues.Any()) throw new Exception("Sibiling replicated dbs are undefined");
             
-            foreach (var sibiling in sibilings.Split(';'))
+            foreach (var sibiling in configuration.SendingQueues)
             {
                 var exchangeName = sibiling;
                 var queueName = sibiling;
@@ -46,7 +43,7 @@ namespace Crdt.Core.Messaging
                 var channel = replica.Value;
                 var sibiling = replica.Key;
 
-                byte[] operationBodyBytes = System.Text.Encoding.UTF8.GetBytes(jsonOperation);
+                byte[] operationBodyBytes = Encoding.UTF8.GetBytes(jsonOperation);
                 channel.BasicPublish(sibiling, sibiling, null, operationBodyBytes);
             }
         }

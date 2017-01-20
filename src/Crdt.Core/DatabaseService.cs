@@ -32,7 +32,7 @@ namespace Crdt.Core
 
         public string GetDocument(string id)
         {
-            return _storage.GetDocument(id).ToString();
+            return _storage.GetDocument(id)?.ToString();
         }
     }
 }
